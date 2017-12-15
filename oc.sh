@@ -1,6 +1,7 @@
 #!/bin/bash -x
 
-oc cluster up --public-hostname=julio-oc.10.238.41.233.nip.io
+# oc cluster up --public-hostname=julio-oc.10.238.41.233.nip.io
+oc cluster up
 
 # SSH_URI="git@github-isl-01.ca.com:garju09/docker-sleep.git"
 SSH_URI="git@github.com:julio-garcia-fc/docker-sleep.git"
@@ -12,5 +13,5 @@ oc secrets link builder $KEY_NAME
 
 # oc new-app $PWD --source-secret=$KEY_NAME
 # ssh-add ./$KEY_FILE
-oc new-app --strategy=docker --source-secret=$KEY_NAME $SSH_URI
+oc new-app --source-secret=$KEY_NAME $SSH_URI
 # oc new-app git@github-isl-01.ca.com:garju09/docker-sleep.git
