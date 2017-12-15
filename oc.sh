@@ -12,5 +12,5 @@ oc secrets link builder $KEY_NAME
 
 # oc new-app $PWD --source-secret=$KEY_NAME
 # ssh-add ./$KEY_FILE
-oc new-app --source-secret=$KEY_NAME $SSH_URI
+oc new-app --strategy=docker --source-secret=$KEY_NAME $SSH_URI
 # oc new-app git@github-isl-01.ca.com:garju09/docker-sleep.git
