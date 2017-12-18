@@ -2,7 +2,7 @@
   "kind": "Template",
   "apiVersion": "v1",
   "metadata": {
-    "name": "docker-sleep-template",
+    "name": "docker-sleep-image-template",
     "annotations": {
       "description": "This is template to create imagesStreams and BuildConfigs for docker-sleep",
       "iconClass": "icon-openjdk",
