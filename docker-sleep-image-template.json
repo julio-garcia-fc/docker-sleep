@@ -1,0 +1,156 @@
+{
+  "kind": "Template",
+  "apiVersion": "v1",
+  "metadata": {
+    "name": "docker-sleep-template",
+    "annotations": {
+      "description": "This is template to create imagesStreams and BuildConfigs for docker-sleep",
+      "iconClass": "icon-openjdk",
+      "tags": "docker-play"
+    }
+  },
+  "labels": {
+    "template": "docker-play-images-template"
+  },
+  "objects": [{
+      "kind": "ImageStream",
+      "apiVersion": "v1",
+      "metadata": {
+        "name": "centos",
+        "labels": {
+          "app": "docker-play"
+        },
+        "annotations": {
+          "openshift.io/display-name": "centos7"
+        }
+      },
+      "spec": {
+        "tags": [{
+          "name": "centos7",
+          "annotations": {
+            "openshift.io/display-name": "Centos 7",
+            "openshift.io/imported-from": "centos:centos7",
+            "description": "Build centos",
+            "tags": "centos",
+            "supports": "centos"
+          },
+          "from": {
+            "kind": "DockerImage",
+            "name": "centos:centos7"
+          }
+        }]
+      }
+    },
+    {
+      "kind": "ImageStream",
+      "apiVersion": "v1",
+      "metadata": {
+        "name": "docker-sleep",
+        "annotations": {
+          "openshift.io/display-name": "docker-sleep"
+        },
+        "labels": {
+          "app": "docker-play"
+        }
+      },
+      "spec": {
+        "tags": [{
+          "name": "latest",
+          "annotations": {
+            "openshift.io/display-name": "docker-sleep",
+            "description": "Build docker-sleep",
+            "tags": "docker-sleep"
+          },
+          "from": {
+            "kind": "ImageStreamTag",
+            "name": "latest"
+          }
+        }]
+      }
+    },
+    {
+      "kind": "BuildConfig",
+      "apiVersion": "v1",
+      "metadata": {
+        "name": "docker-sleep",
+        "labels": {
+          "app": "docker-play"
+        },
+        "annotations": {
+          "template.alpha.openshift.io/wait-for-ready": "true"
+        }
+      },
+      "spec": {
+        "triggers": [{
+            "type": "GitHub",
+            "github": {
+              "secret": "secret101"
+            }
+          },
+          {
+            "type": "Generic",
+            "generic": {
+              "secret": "secret101"
+            }
+          }
+        ],
+        "source": {
+          "type": "Git",
+          "git": {
+            "uri": "${SOURCE_GIT_REPOSITORY}",
+            "ref": "${SOURCE_GIT_REF}"
+          },
+          "contextDir": ".",
+          "sourceSecret": {
+            "name": "uimsaas-git"
+          }
+        },
+        "strategy": {
+          "type": "Docker",
+          "dockerStrategy": {
+            "noCache": true,
+            "from": {
+              "kind": "ImageStreamTag",
+              "name": "centos:centos7"
+            }
+          }
+        },
+        "output": {
+          "to": {
+            "kind": "ImageStreamTag",
+            "name": "docker-sleep:latest"
+          }
+        },
+        "resources": {}
+      }
+    },
+    {
+      "kind": "Secret",
+      "apiVersion": "v1",
+      "metadata": {
+        "name": "uimsaas-git",
+        "labels": {
+          "app": "docker-play"
+        }
+      },
+      "data": {
+        "ssh-privatekey": "LS0tLS1CRUdJTiBSU0EgUFJJVkFURSBLRVktLS0tLQpNSUlFcEFJQkFBS0NBUUVBdnNVaHZBVnkxU2kxYlA4eW92NmtmYkxDOCtONVk3UzY4NnJvcjZ2NWMwbEtSUFZ2CmtFRmxkNldYVE9QK3BwMHdRWUZyR0Z1N0lxNUttaXVMWDVxbmVGcG80dFF1MGFGak56d01ndDVkMGlaNTBzNFAKOFp1cGVzNElHN2dUc3VIZEQyOGdGdkcyNHhUY3FvM2p4NHo2endOK3loSFk2OHNBMzZrdVc1MU5DNjNEYXBxNwpsL0FVcGJRSURINURVSFZIS0RuNTJCNGF4N3k4V0QvZlc2N01rV2V3TFNqYjFtNkJlVlU4RnVPRUhBT1BQaUlQCmwrT0FJN25CSERnOEhpMFU4SnFyMTAvRDBQay94ZkdqaFg5VW5KM3M2K2VaNDBKWWJnQld6eDZzTWVIekpHTGUKWjhyNHcrVUR6OVFSQk5vVlBtN0lWUjNqOHNjL3BkL0dHbVVzaVFJREFRQUJBb0lCQVFDaGFUUm8zUWRUV2hWZgp1dkdDUGdpNW5qWWJtMzJMSWxFSWVMUldaeUV5TFhIY3RQb0hTWDNyNVQwR1B1YW8zTmtHbzlVVWtCRGZnQzc1CkVSems4SHNBZHliRnZaZzdvTnpNMEU4WnI4SWNYSmU1Q01jdXUzR0R5YTNNbmt4MGoyeTJjV1RxWk94RWFOTm8KcjVOcHRWeEZLZ1R1UG5tVzBIWFZ5RlRFQ1cwMkVnRmRWVEZtSWcwdWdSOWpOSUpiZnZkc0cwdG5CLzZVWUZyZAp1c1Z4dndidmV2d0k1WU4yaWQ4UFBnVGNFRlBUVm9QWmsrenJlY21wanRabitPYnp6Um9CK3Fuc0lhQ1g1WXFPCmhzdHkzSk5CQjZVQ0IxNnNjdFpPODF6VTN2VStXZkZmL1RHd0JYK0dsSWhBSGlZZFNYNEFldWZlcnBFRFcwRnUKSzgreDlLL3hBb0dCQVBNQ1Frc1FMZFVJUk11SjhWdmxMWUltbjBScUF1Zmd5aHc5TGhnV0JVc2hJWUQ3Um8zUAplYXEyWFJPOGdwYWRucUw2MXVnVGlRbnUzNFhYUi9oaTluM1VhYUIxNVVJT3kyRkk0c3BHUXJQUHE4SlZ6MUliClprOTk0bTh5TkxXV2JlYTBEZUthd3htL2MxaGhXeGE2OTBpZHdCaDhmVDU4aE15a3JTVlFzL08xQW9HQkFNajMKOHhtUm9JOGUrMlVaTHllbjJGNkdVU1RnSGo5bDFuWmw3M0txRHlBQmNSSXQ5UkM3TFRFcmNLY1pad2s5MTVVRgpWK0FyT1pTL3RmN0wwWHNZazRlYlhuZndNL3dzRmR3M2Z5bmRmeTZJNUU2UG9UWjIzd2NVRXJjREVZQUdzcml0CnRCOEdkaVNTY0hKdmZiTVJ6dy9JT3JiTkE3ak5OckkxdFBVelVnSUZBb0dBVHdSSEJoMW1xY1NjaWdwNm5zVHcKZlVlTnRqTTZhcWVmVUh0Y1I1eXhiL0ovOEc3RVRFeFFaWUFTMTk0T0lHZDBNODZZbnJIcmQzMWkxU1JoVkpUcApUWlVLRzVENlVQWjZqMUdoM04vbnhJd2NiMzV6Z1dGRGJVbWpuVUNYL3d2QkJLazdjcG1jSXYwcnhtc3hzVHh1Ck9BQ0RlL0xPenNpeWJkQ0dOSUgvWVprQ2dZRUF1cWQ0TlVaSmJzUml6NnBOWHJLSXhucFFBVVRiTXh6ZHpNZXUKVnJ4V0llN1Uyd0t1TzJUdGUxNlNXZERCSHhjK0ZKMksyWnlyOVZqOXF2SVkxUkNsYld6RGwvZ1VBR0hkeDlRUAptbzJybzBmbmJJUUFRbnF6ZUhxUFMwVmhTcHh1QUJMdFdXZUI4VVBGaHJQQWRzSFNwQ0RmVDRzb3FzcUd3NHdZClR5amtRUlVDZ1lBNkV2MjNqSzJzOWNjMHJUNi9xc0VSaXYwdyttRnhYM0toWVA4Y0UxdzRkdDh3Vi9FbmJHWEcKcndTQVowSS85K0NNeUpUaWd6b2NURktWN2VPeXdtK0VBS21qY0NLem9LU1R4TXNhUVZYQjVmK3hMdms1TVhKZwpVMi9CeDlGL1JxczlISkxoSlBBWmsvU1lpQUovMkEyZ0Z4dWl6V0NEUHg2N09yQjNGYkxWeVE9PQotLS0tLUVORCBSU0EgUFJJVkFURSBLRVktLS0tLQo="
+      },
+      "type": "kubernetes.io/ssh-auth"
+    }
+  ],
+  "parameters": [
+    {
+      "name": "SOURCE_GIT_REPOSITORY",
+      "displayName": "Git repository",
+      "description": "",
+      "value": "git@github.com:julio-garcia-fc/docker-sleep.git"
+    },
+    {
+      "name": "SOURCE_GIT_REF",
+      "displayName": "Git reference",
+      "description": "",
+      "value": "master"
+    }
+  ]
+}
