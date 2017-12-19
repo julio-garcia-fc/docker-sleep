@@ -7,15 +7,11 @@ SSH_PROJECT="github.com:julio-garcia-fc/docker-sleep.git"
 SSH_URI="git@${SSH_PROJECT}"
 KEY_NAME=sleep-key-rsa
 KEY_FILE=sleep-key_rsa
-set -x
 oc secrets new-sshauth $KEY_NAME --ssh-privatekey=$PWD/$KEY_FILE
 oc annotate secret/$KEY_NAME "build.openshift.io/source-secret-match-uri-1=ssh://${SSH_PROJECT}"
 oc secrets link builder $KEY_NAME
 
-# oc new-app $PWD --source-secret=$KEY_NAME
 # ssh-add ./$KEY_FILE
 echo "-------------------------------------------------------------"
-# oc new-app --source-secret=$KEY_NAME ssh:${SSH_PROJECT}
-# oc new-app --source-secret=$KEY_NAME $SSH_URI
-oc new-app --source-secret=$KEY_NAME --strategy=docker $SSH_URI
-# oc new-app $SSH_URI
+# oc new-app --source-secret=$KEY_NAME --strategy=docker centos~$SSH_URI
+oc new-app --strategy=docker centos~$SSH_URI
