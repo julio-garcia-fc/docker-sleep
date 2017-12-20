@@ -1,0 +1,115 @@
+{
+  "kind": "Template",
+  "apiVersion": "v1",
+  "metadata": {
+    "name": "docker-sleep-infra-template",
+    "annotations": {
+      "description": "This is template to create DeploymentConfigs, Services and Routes for docker-sleep",
+      "iconClass": "icon-openjdk",
+      "tags": "docker-play"
+    }
+  },
+  "labels": {
+    "template": "docker-sleep-infra-template"
+  },
+  "objects": [
+    {
+      "kind": "DeploymentConfig",
+      "apiVersion": "v1",
+      "metadata": {
+        "name": "${SLEEP_IMAGE}",
+        "labels": {
+          "app": "docker-play",
+          "target": "play"
+        }
+
+      },
+      "spec": {
+        "strategy": {
+          "type": "Recreate"
+        },
+        "triggers": [],
+        "replicas": 1,
+        "selector": {
+          "target": "play"
+        },
+        "template": {
+          "metadata": {
+            "labels": {
+              "target": "play"
+            }
+          },
+          "spec": {
+            "containers": [{
+              "name": "uim-saas",
+              "image": "${DOCKER_REGISTRY}/${NAMESPACE}/${SLEEP_IMAGE}:latest",
+              "env": [
+              ],
+              "ports": [{
+                "containerPort": 8088,
+                "protocol": "TCP"
+              }],
+              "terminationMessagePath": "/dev/termination-log",
+              "imagePullPolicy": "IfNotPresent",
+              "securityContext": {
+                "capabilities": {},
+                "privileged": false
+              }
+            }],
+            "restartPolicy": "Always",
+            "dnsPolicy": "ClusterFirst",
+            "serviceAccountName": "default",
+            "serviceAccount": "default",
+            "schedulerName": "default-scheduler"
+          }
+        }
+      }
+    },
+    {
+      "kind": "Service",
+      "apiVersion": "v1",
+      "metadata": {
+        "name": "docker-sleep",
+        "labels": {
+          "app": "docker-play"
+        }
+      },
+      "spec": {
+        "ports": [{
+          "name": "docker-sleep",
+          "protocol": "TCP",
+          "port": 8088,
+          "targetPort": 8088
+        }],
+        "selector": {
+          "target": "play"
+        },
+        "type": "ClusterIP",
+        "sessionAffinity": "None"
+      },
+      "status": {
+        "loadBalancer": {}
+      }
+    }
+  ],
+  "parameters": [{
+      "name": "NAMESPACE",
+      "displayName": "Namespace",
+      "description": "Namespace (should match the project name)",
+      "value": "myproject"
+    },
+    {
+      "name": "DOCKER_REGISTRY",
+      "displayName": "[REGISTRY] Docker registry",
+      "description": "ip:port or hostname:port",
+      "value": "",
+      "required": true
+    },
+    {
+      "name": "SLEEP_IMAGE",
+      "displayName": "[IMAGES] UIM image name",
+      "description": "",
+      "value": "docker-sleep"
+    }
+  ]
+}
