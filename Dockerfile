@@ -10,4 +10,4 @@ RUN yum -y upgrade && \
 
 ENTRYPOINT ["/usr/local/bin/dumb-init"]
 
-CMD ["bash", "-c", "sleep 3600"]
+CMD ["nc", "-l", "8088"]
