@@ -17,6 +17,7 @@ set -x
 INFRA_TEMPLATE=${PREFIX}-infra-template
 oc create -f $INFRA_TEMPLATE.json
 oc process -p DOCKER_REGISTRY=172.30.1.1 $INFRA_TEMPLATE | oc create -f -
+sleep 10
 oc describe $PREFIX
 oc rollout latest dc/$PREFIX
 oc logs -f dc/$PREFIX

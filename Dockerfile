@@ -1,4 +1,4 @@
-FROM centos:centos7
+FROM centos:7
 
 RUN yum -y upgrade && \
     yum -y install wget nc && \
