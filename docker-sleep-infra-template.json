@@ -41,7 +41,7 @@
           },
           "spec": {
             "containers": [{
-              "name": "uim-saas",
+              "name": "docker-sleep",
               "image": "${DOCKER_REGISTRY}/${NAMESPACE}/${SLEEP_IMAGE}:latest",
               "env": [
               ],

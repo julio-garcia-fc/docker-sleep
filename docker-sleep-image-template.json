@@ -102,7 +102,7 @@
           },
           "contextDir": ".",
           "sourceSecret": {
-            "name": "uimsaas-git"
+            "name": "docker-sleep-git"
           }
         },
         "strategy": {
@@ -128,7 +128,7 @@
       "kind": "Secret",
       "apiVersion": "v1",
       "metadata": {
-        "name": "uimsaas-git",
+        "name": "docker-sleep-git",
         "labels": {
           "app": "docker-play"
         }
