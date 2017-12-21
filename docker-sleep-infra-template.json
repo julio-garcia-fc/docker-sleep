@@ -90,6 +90,28 @@
       "status": {
         "loadBalancer": {}
       }
+    },
+    {
+      "kind": "Route",
+      "apiVersion": "v1",
+      "metadata": {
+        "name": "docker-sleep",
+        "labels": {
+          "app": "docker-play"
+        }
+      },
+      "spec": {
+        "host": "${ROUTE_HOSTNAME}",
+        "to": {
+          "kind": "Service",
+          "name": "docker-sleep",
+          "weight": 100
+        },
+        "port": {
+          "targetPort": "docker-sleep"
+        },
+        "wildcardPolicy": "None"
+      }
     }
   ],
   "parameters": [{
@@ -110,6 +132,13 @@
       "displayName": "[IMAGES] UIM image name",
       "description": "",
       "value": "docker-sleep"
+    },
+    {
+      "name": "ROUTE_HOSTNAME",
+      "displayName": "[UMP] Route hostname",
+      "description": "",
+      "value": "",
+      "required": true
     }
   ]
 }
